@@ -1,0 +1,1 @@
+docker run -d -p 8002:8000 sample02
