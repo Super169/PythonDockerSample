@@ -15,6 +15,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         # return socket.getfqdn(host)
         return host
 
+    #  Disable log_message
+    #  Seems override address_string still cannot fix the issue,
+    #  try to disable log_message as the bug is caused by the IP disabled in log_message.
+    #  But it may have no effect if the IP is resolved somewhere before log_message.
+    def log_message(self, format, *args):
+        return
+
     def handler(self, mode, path, data):
         path = path.lower()
         if path == "/cwr":
@@ -51,5 +58,5 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 # httpd = HTTPServer(('localhost', PORT), SimpleHTTPRequestHandler)
 httpd = HTTPServer(('0.0.0.0', PORT), SimpleHTTPRequestHandler)
-print("Server is running at ", PORT)
+print("Server Sample03 is running at ", PORT)
 httpd.serve_forever()
