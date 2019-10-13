@@ -6,6 +6,7 @@ import MyUtil as mu
 url = "http://rss.weather.gov.hk/rss/CurrentWeather.xml"
 patterns = {
     'cdata': "<![\[]CDATA[\[](.*)]]>",
+    'update_dtm': r"<title>Bulletin updated at (.*?)</title>",
     'icon': r" src=\"http://rss.weather.gov.hk/img/pic(\d+)[.]png\" ",
     'warning': r"<SPAN id=\'warning_message\' >(.*)</SPAN>",
     'temperature': r"<br/>[ ]*?Air temperature : (\d+) degrees Celsius<br/>",
@@ -33,6 +34,9 @@ def getData() -> object:
         return data
 
     xml = mu.RE.cleanResult(response.text)
+
+    data['Update time'] = mu.RE.getFirst(xml, patterns.get('update_dtm'))
+
     result = re.search(patterns.get('cdata'), xml)
 
     if result is None:

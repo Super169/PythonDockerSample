@@ -4,7 +4,15 @@ from urllib.parse import urlparse, parse_qs
 
 PORT = 8000
 
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+
+    #  Refer to https://stackoverflow.com/questions/2617615/slow-python-http-server-on-localhost
+    #  Override address_string can solve the issue in DNS lookup https://bugs.python.org/issue6085
+    def address_string(self):
+        host, port = self.client_address[:2]
+        # return socket.getfqdn(host)
+        return host
 
     def handler(self, mode, path, data):
         msg = 'mode: {}\nPath: {}\ndata: {}'.format(mode, path, data)
@@ -12,14 +20,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(msg.encode())
 
-    
     def do_GET(self):
         urlparm = urlparse(self.path) 
         path = urlparm.path
         data = parse_qs(urlparm.query)
         data['__success__'] = True
         self.handler('get', path, data)
-        
 
     def do_POST(self):
         path = self.path
